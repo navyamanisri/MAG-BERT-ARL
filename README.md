@@ -241,24 +241,60 @@ To validate model predictions without relying on artificial metrics, the framewo
 
 ---
 
-## 🗺️ Roadmap & Milestones
+## 🗺️ Implementation Roadmap
 
-The project is structured across five sequential implementation phases:
+The development lifecycle of **MAG-BERT-ARL** is divided into nine clear, modular phases. This roadmap guides you from the initial workspace configuration to production deployment:
 
-*   [x] **Phase 1: Project Structuring & Foundations**
-    *   Set up modular folder structure and build configuration systems.
-    *   Select target base models and establish schema files for multi-modal features.
-*   [ ] **Phase 2: Ingestion & Feature Preprocessing Pipelines**
-    *   Develop visual pipeline extraction (MediaPipe coordinates).
-    *   Implement acoustic analyzer (pitch, tone, energy extraction).
-    *   Set up speech-to-text diarization and transcript word-mapping.
-*   [ ] **Phase 3: MAG-BERT Fusion Model Development**
-    *   Implement custom Multimodal Adaptation Gate layer in PyTorch.
-    *   Set up the combined model to accept gated inputs within BERT attention layers.
-*   [ ] **Phase 4: Adversarial Fairness Implementation**
-    *   Write the Gradient Reversal Layer (GRL).
-    *   Build the secondary demographic classifier head.
-    *   Develop the multi-task loss optimizer combining target accuracy and adversarial penalties.
-*   [ ] **Phase 5: Auditing, APIs & Production Validation**
-    *   Perform multi-dimensional audits to track and eliminate performance divergence across cohorts.
-    *   Build a FastAPI wrapper to accept raw mp4 uploads and output fair evaluation reports.
+### ⚙️ Phase 1: Environment Setup
+*   [x] **Hardware & Framework Alignment:** Configure PyTorch 2.x with CUDA 11.8/12.1 runtime alignments.
+*   [x] **Directory Architecture:** Create the modular repository structure (`configs/`, `datasets/`, `models/`, `preprocessing/`, `backend/`, etc.).
+*   [ ] **Config Management:** Define `model_config.yaml` and `preprocess_config.yaml` to decouple hyperparameters from source code.
+*   [ ] **Dependency Orchestration:** Install and lock required Python packaging versions (Transformers, PyTorch Lightning, MediaPipe, openSMILE, FastAPI).
+
+### 📊 Phase 2: Dataset Preparation
+*   [ ] **Metadata Integration:** Link raw `.mp4` video files to ground-truth assessment labels and candidate demographic attributes in a structured manifest file.
+*   [ ] **Integrity Checks:** Code automated scripts to filter corrupted video files, trace zero-byte audio channels, or handle missing transcripts.
+*   [ ] **Stratified Data Splits:** Design custom batch samplers to ensure training, validation, and testing partitions have balanced representation across protected cohorts.
+*   [ ] **Class Balancing & Weights:** Formulate loss-scaling coefficients to handle severe skewness in competency ratings across historical demographic pools.
+
+### 🧹 Phase 3: Preprocessing Pipeline
+*   [ ] **Audio Signal Separation:** Script automated FFmpeg extraction pipelines converting stereo video outputs into normalized mono `16kHz` `.wav` audio.
+*   [ ] **Visual Frame Sampling:** Build keyframe extractors optimizing storage by isolating core conversation segments and removing silent margins.
+*   [ ] **Transcripts Cleaning:** Normalize text transcriptions, filter non-verbal cues (e.g., laughter, throat-clearing), and structure word tokens.
+*   [ ] **Forced Text-Audio Alignment:** Employ speech-to-text forced aligners to pinpoint precise timestamps matching spoken words to audio features.
+
+### 🧬 Phase 4: Multimodal Feature Extraction
+*   [ ] **Verbal Embeddings:** Process transcript inputs using Hugging Face's BERT tokenizer, computing subword segment IDs and token masks.
+*   [ ] **Acoustic Profiling:** Run openSMILE/Librosa feature extraction routines to capture prosodic features (pitch variations, energy shifts, pause frequency).
+*   [ ] **Non-Verbal Visual Mapping:** Track face-meshes, head poses, and facial action units (FAUs) using MediaPipe and OpenCV to isolate visual engagement markers.
+*   [ ] **Cross-Modal Synchronization:** Build sequence aligners to map high-frequency audio and visual frame features onto corresponding text token embeddings.
+
+### 🧠 Phase 5: MAG-BERT Implementation
+*   [ ] **Multimodal Adaptation Gate:** Code the custom `MultimodalAdaptationGate` layer in PyTorch to compute displacement vectors for text embeddings.
+*   [ ] **Attention Injection:** Inject the gated multimodal shifts directly before BERT transformer attention sequences.
+*   [ ] **Competency Regressor:** Construct linear pooling layers and multi-head regressors to predict specific job competency metrics.
+*   [ ] **Adversarial Demographic Head:** Program the Gradient Reversal Layer (GRL) and connect it to a multi-class demographic classifier.
+
+### ⚖️ Phase 6: Fairness-Aware Evaluation
+*   [ ] **Competency Metric Suite:** Implement MSE, Pearson's $\rho$, and Spearman's $r_s$ score validators to track rating accuracy.
+*   [ ] **Fairness Audits:** Integrate algorithmic fairness tests verifying Demographic Parity and Equal Opportunity differences across subgroups.
+*   [ ] **Latent Vector Auditing:** Analyze shared latent spaces using t-SNE or UMAP to verify the demographic-invariant clustering of feature representations.
+*   [ ] **Adversarial Hyperparameter Tuning:** Dynamically sweep adversarial loss scaling ($\lambda$) to evaluate trade-offs between prediction accuracy and bias reduction.
+
+### 🔌 Phase 7: Backend / API Integration
+*   [ ] **Asynchronous Processing:** Set up background job worker pools using Celery/Redis or FastAPI BackgroundTasks to process bulky video files without thread blocking.
+*   [ ] **Ingestion Endpoints:** Implement secure `/upload` APIs validating video formats, framerates, and file sizes using Pydantic schemas.
+*   [ ] **Status & Result Endpoints:** Create `/status` and `/results` APIs to support polling or WebSockets updates for frontend progress displays.
+*   [ ] **Audit Reports Export:** Develop API routines compiling performance matrices, transcript lines, and fairness audits into exportable JSON/PDF reports.
+
+### 🖥️ Phase 8: Frontend / Dashboard
+*   [ ] **Video Upload Center:** Construct a sleek, interactive file dropzone supporting video uploads with immediate quality validations.
+*   [ ] **Assessment Display:** Build interactive interfaces tracing transcript segments synchronizing voice recordings and video playback.
+*   [ ] **Competency Visualizer:** Design clear radar and bar charts representing candidate competencies and structured textual feedback.
+*   [ ] **Fairness Auditor Console:** Build an administrator dashboard visualizing cohort performance parity, disparity indicators, and demographic distribution overlays.
+
+### 🚀 Phase 9: Deployment & Optimization
+*   [ ] **Docker Containment:** Build lightweight, multi-stage Docker configurations packaging the API layer, worker services, and dependencies.
+*   [ ] **Model Compression:** Export PyTorch models to ONNX or TensorRT runtimes to reduce latency and memory overhead on standard host systems.
+*   [ ] **Inference Batching:** Implement dynamic request batching to handle multi-modal pipelines under concurrent user scenarios.
+*   [ ] **Continuous Fairness Monitoring:** Integrate prometheus-based exporters reporting incoming feature shifts and downstream demographic metrics over time.
