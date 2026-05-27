@@ -1,0 +1,13 @@
+# Data Manipulation & Numerical Analysis
+numpy
+pandas
+
+# Machine Learning & Scientific Computing
+scikit-learn
+
+# Data Visualization
+matplotlib
+
+# Utilities & Development Tools
+tqdm
+python-dotenv
